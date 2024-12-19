@@ -24,7 +24,7 @@ const Header = ({ onSearch }) => {
     };
 
     const handleSubmit = (e) => {
-      e.preventDefault();
+      // e.preventDefault();
       const formattedDate = new Date().toISOString().split("T")[0];
       const payload = {
         ...formData,

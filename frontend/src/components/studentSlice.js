@@ -19,6 +19,14 @@ export const addStudent = createAsyncThunk(
     return payload;
   }
 );
+export const updateStudent = createAsyncThunk(
+  "students/updateStudent",
+  async ({ id, updatedData }) => {
+    const { error } = await supabase.from("students").update(updatedData).eq("id", id);
+    if (error) throw new Error(error.message);
+    return { id, updatedData };
+  }
+);
 
 export const deleteStudent = createAsyncThunk(
   "students/deleteStudent",

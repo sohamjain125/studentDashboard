@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteStudent, fetchStudents } from "./studentSlice";
+import { deleteStudent, fetchStudents, updateStudent } from "./studentSlice";
 
 const StudentTable = () => {
   const dispatch = useDispatch();
@@ -10,28 +10,53 @@ const StudentTable = () => {
     loading,
     error,
   } = useSelector((state) => state.students);
+
   const [searchQuery, setSearchQuery] = useState("");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+
   useEffect(() => {
     dispatch(fetchStudents());
   }, [dispatch]);
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     const isConfirmed = window.confirm(
       "Are you sure you want to delete this student?"
     );
     if (isConfirmed) {
-      dispatch(deleteStudent(id));
+      await dispatch(deleteStudent(id));
       alert("Student deleted successfully!");
+  
+      // Re-fetch the updated student list
+      dispatch(fetchStudents());
     }
   };
+  const handleEdit = (student) => {
+    setSelectedStudent(student);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdate = async () => {
+    if (selectedStudent) {
+      await dispatch(updateStudent({ id: selectedStudent.id, updatedData: selectedStudent }));
+      alert("Student updated successfully!");
+      setIsEditModalOpen(false);
+  
+      // Re-fetch the updated student list
+      dispatch(fetchStudents());
+    }
+  };
+
   const handleSearch = (query) => {
     setSearchQuery(query.toLowerCase());
   };
+
   const filteredStudents = students.filter((student) =>
     student.courses.some((course) =>
       course.toLowerCase().includes(searchQuery)
     )
   );
+
   return (
     <>
       <Header onSearch={handleSearch} />
@@ -79,6 +104,14 @@ const StudentTable = () => {
                     </td>
                     <td className="p-4">
                       <button
+                        className="text-blue-600 hover:underline"
+                        onClick={() => handleEdit(student)}
+                        aria-label={`Edit student ${student.name}`}
+                      >
+                        Edit
+                      </button>
+                      <span className="mx-1">|</span>
+                      <button
                         className="text-red-600 hover:underline"
                         onClick={() => handleDelete(student.id)}
                         aria-label={`Delete student ${student.name}`}
@@ -93,6 +126,89 @@ const StudentTable = () => {
           </table>
         )}
       </div>
+
+      {/* Edit Modal */}
+      {isEditModalOpen && selectedStudent && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-md w-1/3">
+            <h2 className="text-xl font-semibold mb-4">Edit Student</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block mb-2 text-sm font-medium">Name</label>
+                <input
+                  type="text"
+                  value={selectedStudent.name}
+                  onChange={(e) =>
+                    setSelectedStudent((prev) => ({
+                      ...prev,
+                      name: e.target.value,
+                    }))
+                  }
+                  className="w-full border px-4 py-2 rounded"
+                />
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-medium">Cohort</label>
+                <input
+                  type="text"
+                  value={selectedStudent.cohort}
+                  onChange={(e) =>
+                    setSelectedStudent((prev) => ({
+                      ...prev,
+                      cohort: e.target.value,
+                    }))
+                  }
+                  className="w-full border px-4 py-2 rounded"
+                />
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-medium">Courses</label>
+                <input
+                  type="text"
+                  value={selectedStudent.courses.join(", ")}
+                  onChange={(e) =>
+                    setSelectedStudent((prev) => ({
+                      ...prev,
+                      courses: e.target.value.split(","),
+                    }))
+                  }
+                  className="w-full border px-4 py-2 rounded"
+                />
+              </div>
+              <div>
+                <label className="block mb-2 text-sm font-medium">Status</label>
+                <select
+                  value={selectedStudent.status}
+                  onChange={(e) =>
+                    setSelectedStudent((prev) => ({
+                      ...prev,
+                      status: e.target.value === "true",
+                    }))
+                  }
+                  className="w-full border px-4 py-2 rounded"
+                >
+                  <option value="true">Active</option>
+                  <option value="false">Inactive</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex justify-end space-x-4 mt-4">
+              <button
+                onClick={() => setIsEditModalOpen(false)}
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdate}
+                className="bg-blue-600 text-white px-4 py-2 rounded"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
