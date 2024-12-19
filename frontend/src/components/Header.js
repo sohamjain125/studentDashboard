@@ -196,6 +196,14 @@ const Header = ({ onSearch }) => {
         </div>
       </div>
       <div className="flex justify-between items-center my-6">
+      <div className="flex gap-4">
+            <select className="border rounded px-4 py-2">
+              <option>AY 2024-25</option>
+            </select>
+            <select className="border rounded px-4 py-2">
+              <option>CBSE 9</option>
+            </select>
+          </div>
         <button
           onClick={() => setShowModal(true)}
           className="bg-blue-600 text-white px-4 py-2 rounded"
