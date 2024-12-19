@@ -2,43 +2,41 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import "./styles.css";
+import './styles.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { Provider } from 'react-redux'; // Import Redux Provider
 import NotFound from './components/NotFound';
-// import reportWebVitals from './reportWebVitals';
+import store from './util/store';
+
+// Define the routes for the application
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <App />,
   },
   {
-    path:"/dashboard",
-    element:<NotFound/>
-
-  },
-  
-  {
-    path:"/chapter",
-    element:<NotFound/>
+    path: '/dashboard',
+    element: <NotFound />,
   },
   {
-    path:"/help",
-    element:<NotFound/>
+    path: '/chapter',
+    element: <NotFound />,
   },
   {
-    path:"/reports",
-    element:<NotFound/>
-  }
-  
+    path: '/help',
+    element: <NotFound />,
+  },
+  {
+    path: '/reports',
+    element: <NotFound />,
+  },
 ]);
 
-// const root = ReactDOM.createRoot(document.getElementById('root'));
-
+// Create the root and render the application
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<RouterProvider  router={router}></RouterProvider>
+root.render(
+  <Provider store={store}>
+    {/* Wrap with Redux Provider */}
+    <RouterProvider router={router} />
+  </Provider>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-// reportWebVitals();
