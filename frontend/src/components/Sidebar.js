@@ -34,7 +34,7 @@ const Sidebar = () => {
           </button>
         </Link>
 
-        <Link>
+        <Link to={"/settings"}> 
           <button className="px-6 py-3 w-full hover:bg-gray-200">
             <img src="../Settings.png"></img>
           </button>
