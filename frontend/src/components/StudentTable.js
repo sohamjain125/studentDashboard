@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
+import { supabase } from "../util/supabaseClient";
+// import { supabase } from './supabaseClient.js';
 
 const StudentTable = () => {
   const [students, setStudents] = useState([]);
@@ -10,12 +12,11 @@ const StudentTable = () => {
   const fetchStudents = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:4000/students");
-      if (!response.ok) {
-        throw new Error("Failed to fetch students.");
+      const { data, error } = await supabase.from("students").select("*");
+      if (error) {
+        throw new Error(error.message);
       }
-      const data = await response.json();
-      setStudents(data);
+      setStudents(data || []);
     } catch (error) {
       console.error("Error fetching students:", error.message);
     } finally {
@@ -25,16 +26,18 @@ const StudentTable = () => {
 
   // Deletes a student and refreshes the list
   const deleteStudent = async (id) => {
+    setLoading(true);
     try {
-      const response = await fetch(`http://localhost:4000/students/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) {
-        throw new Error("Failed to delete student.");
+      const { error } = await supabase.from("students").delete().eq("id", id);
+      if (error) {
+        throw new Error(error.message);
       }
-      fetchStudents();
+      alert("Student deleted successfully!");
+      fetchStudents(); // Refresh the list after deletion
     } catch (error) {
       console.error("Error deleting student:", error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,7 +47,7 @@ const StudentTable = () => {
   };
 
   const filteredStudents = students.filter((student) =>
-    student.courses.some((course) =>
+    student.courses?.some((course) =>
       course.toLowerCase().includes(searchQuery)
     )
   );
