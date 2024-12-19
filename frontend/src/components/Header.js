@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addStudent } from "./studentSlice";
-// import { addStudent } from "../studentSlice"; // Import the Redux action
+import { Tooltip } from "react-tooltip"; // Correct named import for Tooltip
 
 const Header = ({ onSearch }) => {
   const [showModal, setShowModal] = useState(false);
-  const dispatch = useDispatch(); // Redux dispatch function
+  const dispatch = useDispatch();
 
   // Add Student Form Component
   const AddStudentForm = ({ onClose }) => {
@@ -24,7 +24,7 @@ const Header = ({ onSearch }) => {
     };
 
     const handleSubmit = (e) => {
-      // e.preventDefault();
+      e.preventDefault();
       const formattedDate = new Date().toISOString().split("T")[0];
       const payload = {
         ...formData,
@@ -33,10 +33,9 @@ const Header = ({ onSearch }) => {
         lastlogin: formattedDate,
       };
 
-      // Dispatch Redux action to add student
       dispatch(addStudent(payload));
       alert("Student added successfully!");
-      onClose(); // Close the modal
+      onClose();
     };
 
     return (
@@ -112,7 +111,6 @@ const Header = ({ onSearch }) => {
     );
   };
 
-  // Search Handler
   const handleSearch = (event) => {
     onSearch(event.target.value);
   };
@@ -148,14 +146,40 @@ const Header = ({ onSearch }) => {
         <div className="flex items-center gap-9">
           {/* Notification Icons */}
           <div className="flex gap-10">
-            <img className="w-6 h-6" src="../help (1).png" alt="Help" />
-            <img className="w-6 h-6" src="../message.png" alt="Messages" />
-            <img className="w-6 h-6" src="../settings (1).png" alt="Settings" />
+            <img
+              className="w-6 h-6"
+              src="../help (1).png"
+              alt="Help"
+              data-tooltip-id="help-tooltip"
+              data-tooltip-content="Help"
+            />
+            <img
+              className="w-6 h-6"
+              src="../message.png"
+              alt="Messages"
+              data-tooltip-id="message-tooltip"
+              data-tooltip-content="Messages"
+            />
+            <img
+              className="w-6 h-6"
+              src="../settings (1).png"
+              alt="Settings"
+              data-tooltip-id="settings-tooltip"
+              data-tooltip-content="Settings"
+            />
             <img
               className="w-6 h-6"
               src="../Notification.png"
               alt="Notifications"
+              data-tooltip-id="notification-tooltip"
+              data-tooltip-content="Notifications"
             />
+
+            {/* Tooltip instances */}
+            <Tooltip id="help-tooltip" place="top" effect="solid" />
+            <Tooltip id="message-tooltip" place="top" effect="solid" />
+            <Tooltip id="settings-tooltip" place="top" effect="solid" />
+            <Tooltip id="notification-tooltip" place="top" effect="solid" />
           </div>
 
           {/* Profile */}
@@ -172,14 +196,6 @@ const Header = ({ onSearch }) => {
         </div>
       </div>
       <div className="flex justify-between items-center my-6">
-        <div className="flex gap-4">
-          <select className="border rounded px-4 py-2">
-            <option>AY 2024-25</option>
-          </select>
-          <select className="border rounded px-4 py-2">
-            <option>CBSE 9</option>
-          </select>
-        </div>
         <button
           onClick={() => setShowModal(true)}
           className="bg-blue-600 text-white px-4 py-2 rounded"
