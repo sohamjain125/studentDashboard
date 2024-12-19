@@ -30,6 +30,10 @@ const router = createBrowserRouter([
     path: '/reports',
     element: <NotFound />,
   },
+  {
+    path: '/settings',
+    element: <NotFound />,
+  },
 ]);
 
 // Create the root and render the application
